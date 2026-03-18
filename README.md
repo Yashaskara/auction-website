@@ -1,4 +1,4 @@
-# STRIKE — Cricket Auction Platform
+# NO RUN — Cricket Auction Platform
 
 Real-time multiplayer IPL-style cricket auction web app. Multiple users connect simultaneously as Admin, Auctioneer, Team owners, or Spectators — all seeing live updates as bids are placed, players are sold, and budgets deplete in real time.
 
@@ -24,7 +24,7 @@ Real-time multiplayer IPL-style cricket auction web app. Multiple users connect 
 
 ## How the Auction Works
 
-STRIKE replicates the IPL mega-auction format:
+No Run replicates the IPL mega-auction format:
 
 1. An **Admin** sets up the auction by creating teams, adding players (each with a base price), and configuring rules like bid increment, squad sizes, budgets, and timer duration.
 2. The Admin **locks and starts** the auction, transitioning the system from `setup` to `live`.

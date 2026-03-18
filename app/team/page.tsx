@@ -163,7 +163,7 @@ export default function TeamPage() {
       <header className="sticky top-0 z-40 bg-surface-primary/80 backdrop-blur-md border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="font-display text-3xl text-gold tracking-wider">STRIKE</h1>
+            <h1 className="font-display text-3xl text-gold tracking-wider">NO RUN</h1>
             <div className="flex items-center gap-2">
               {myTeam && <div className="w-3 h-3 rounded-full" style={{ backgroundColor: myTeam.primary_color }} />}
               <span className="text-sm">{session.teamName}</span>

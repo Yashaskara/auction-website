@@ -1,5 +1,5 @@
 -- ============================================================
--- STRIKE — Cricket Auction App Database Schema
+-- NO RUN — Cricket Auction App Database Schema
 -- Run this in the Supabase SQL Editor
 -- ============================================================
 

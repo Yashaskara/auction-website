@@ -69,7 +69,7 @@ export default function SpectatorPage() {
       <header className="sticky top-0 z-40 bg-surface-primary/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="font-display text-4xl text-gold tracking-wider">STRIKE</h1>
+            <h1 className="font-display text-4xl text-gold tracking-wider">NO RUN</h1>
             <span className={clsx(
               "px-3 py-1 rounded-full text-xs font-semibold",
               auctionState?.status === "live" ? "bg-accent-green/20 text-accent-green" :
