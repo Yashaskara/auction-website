@@ -22,7 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "STRIKE — Cricket Auction",
+  title: "NO RUN — Cricket Auction",
   description: "Real-time multiplayer IPL-style cricket auction platform",
 };
 

@@ -86,7 +86,7 @@ export default function AdminPage() {
       <header className="sticky top-0 z-40 bg-surface-primary/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="font-display text-3xl text-gold tracking-wider">STRIKE</h1>
+            <h1 className="font-display text-3xl text-gold tracking-wider">NO RUN</h1>
             <span className="text-txt-secondary text-sm">/ ADMIN</span>
           </div>
           <button
@@ -386,7 +386,7 @@ function PlayerForm({
             </select>
           </Field>
           <Field label="Base Price">
-            <input type="number" value={basePrice} onChange={(e) => setBasePrice(Number(e.target.value))} min={0} step={10000} className="form-input font-mono" />
+            <input type="number" value={basePrice} onChange={(e) => setBasePrice(Number(e.target.value))} min={0} step={1} className="form-input font-mono" />
           </Field>
           <Field label="Photo URL">
             <input value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} placeholder="https://..." className="form-input" />
@@ -580,7 +580,7 @@ function TeamForm({
             </div>
           </Field>
           <Field label="Budget">
-            <input type="number" value={budget} onChange={(e) => setBudget(Number(e.target.value))} min={0} step={100000} className="w-full px-3 py-2.5 bg-surface-secondary border border-border rounded-lg text-txt-primary text-sm font-mono focus:outline-none focus:border-gold" />
+            <input type="number" value={budget} onChange={(e) => setBudget(Number(e.target.value))} min={0} step={1} className="w-full px-3 py-2.5 bg-surface-secondary border border-border rounded-lg text-txt-primary text-sm font-mono focus:outline-none focus:border-gold" />
           </Field>
           <Field label="Captain Name">
             <input value={captain} onChange={(e) => setCaptain(e.target.value)} className="w-full px-3 py-2.5 bg-surface-secondary border border-border rounded-lg text-txt-primary text-sm focus:outline-none focus:border-gold" />
@@ -703,7 +703,7 @@ function SettingsTab({
         <h3 className="font-display text-xl tracking-wider mb-6">AUCTION PARAMETERS</h3>
         <div className="grid grid-cols-2 gap-5">
           <Field label={`Bid Increment (${formatPrice(bidIncrement)})`}>
-            <input type="number" value={bidIncrement} onChange={(e) => setBidIncrement(Number(e.target.value))} min={1000} step={1000} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
+            <input type="number" value={bidIncrement} onChange={(e) => setBidIncrement(Number(e.target.value))} min={1} step={1} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
           </Field>
           <Field label="Max Players Per Team">
             <input type="number" value={maxPlayers} onChange={(e) => setMaxPlayers(Number(e.target.value))} min={1} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
@@ -712,10 +712,10 @@ function SettingsTab({
             <input type="number" value={minPlayers} onChange={(e) => setMinPlayers(Number(e.target.value))} min={0} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
           </Field>
           <Field label={`Default Team Budget (${formatPrice(defaultBudget)})`}>
-            <input type="number" value={defaultBudget} onChange={(e) => setDefaultBudget(Number(e.target.value))} min={0} step={100000} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
+            <input type="number" value={defaultBudget} onChange={(e) => setDefaultBudget(Number(e.target.value))} min={0} step={1} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
           </Field>
           <Field label={`Default Base Price (${formatPrice(defaultBase)})`}>
-            <input type="number" value={defaultBase} onChange={(e) => setDefaultBase(Number(e.target.value))} min={0} step={10000} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
+            <input type="number" value={defaultBase} onChange={(e) => setDefaultBase(Number(e.target.value))} min={0} step={1} className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-lg text-sm font-mono text-txt-primary focus:outline-none focus:border-gold" />
           </Field>
           <div className="col-span-2 space-y-4">
             <div className="flex items-center gap-3">

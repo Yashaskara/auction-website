@@ -68,9 +68,12 @@ export default function TeamPage() {
     return getRemainingMandatorySlots(mySquad.length, settings);
   }, [mySquad.length, settings]);
 
-  // Min next bid
+  // Min next bid: base price if no bids yet, otherwise highest + increment
   const minNextBid = useMemo(() => {
     if (!auctionState || !settings) return 0;
+    if (!auctionState.current_highest_team_id) {
+      return auctionState.current_highest_bid;
+    }
     return auctionState.current_highest_bid + settings.bid_increment;
   }, [auctionState, settings]);
 

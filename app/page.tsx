@@ -123,7 +123,7 @@ export default function Home() {
       {/* Title */}
       <div className="text-center mb-16">
         <h1 className="font-display text-8xl md:text-9xl tracking-wider text-gold leading-none">
-          STRIKE
+          NO RUN
         </h1>
         <p className="text-txt-secondary text-lg mt-2 tracking-widest uppercase font-body">
           Cricket Auction Platform

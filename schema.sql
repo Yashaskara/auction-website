@@ -124,8 +124,16 @@ begin
     return jsonb_build_object('error', 'This player is not currently on auction');
   end if;
 
-  if p_amount < v_current.current_highest_bid + v_settings.bid_increment then
-    return jsonb_build_object('error', 'Bid must be at least ' || (v_current.current_highest_bid + v_settings.bid_increment));
+  -- First bid: must be >= base price (current_highest_bid when no team has bid)
+  -- Subsequent bids: must be >= current highest + increment
+  if v_current.current_highest_team_id is null then
+    if p_amount < v_current.current_highest_bid then
+      return jsonb_build_object('error', 'Bid must be at least ' || v_current.current_highest_bid);
+    end if;
+  else
+    if p_amount < v_current.current_highest_bid + v_settings.bid_increment then
+      return jsonb_build_object('error', 'Bid must be at least ' || (v_current.current_highest_bid + v_settings.bid_increment));
+    end if;
   end if;
 
   if v_squad_count >= v_settings.max_players_per_team then
