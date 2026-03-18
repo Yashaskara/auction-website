@@ -14,7 +14,7 @@ import type { Player, Team } from "@/types";
 import Image from "next/image";
 import {
   LogOut, SkipForward, Gavel, XCircle, Undo2, RotateCcw,
-  ChevronDown, ChevronUp, Users,
+  ChevronDown, ChevronUp, Users, List,
 } from "lucide-react";
 import clsx from "clsx";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ export default function AuctioneerPage() {
   const [lastSoldPlayer, setLastSoldPlayer] = useState<{ playerId: string; teamId: string; amount: number } | null>(null);
   const [showSoldStamp, setShowSoldStamp] = useState(false);
   const [autoCloseTriggered, setAutoCloseTriggered] = useState(false);
-  const [unsoldCount, setUnsoldCount] = useState(0);
+  const [unsoldPlayers, setUnsoldPlayers] = useState<Player[]>([]);
   
   const prevPlayerRef = useRef<string | null>(null);
 
@@ -37,19 +37,20 @@ export default function AuctioneerPage() {
     }
   }, [router]);
 
-  // Track unsold count and whether all queued players have been processed
+  // Track unsold players list
   useEffect(() => {
-    const fetchUnsoldInfo = async () => {
-      const { count } = await supabase
+    const fetchUnsoldPlayers = async () => {
+      const { data } = await supabase
         .from("players")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "unsold");
-      setUnsoldCount(count ?? 0);
-
-      
+        .select("*")
+        .eq("status", "unsold")
+        .order("queue_order", { ascending: true, nullsFirst: false });
+      if (data) setUnsoldPlayers(data);
     };
-    fetchUnsoldInfo();
+    fetchUnsoldPlayers();
   }, [auctionState, bids]);
+
+  const unsoldCount = unsoldPlayers.length;
 
   // Reset sold stamp when player changes
   useEffect(() => {
@@ -331,7 +332,8 @@ export default function AuctioneerPage() {
             </button>
             <button
               onClick={handleMarkUnsold}
-              disabled={!hasPlayerOnBlock}
+              disabled={!hasPlayerOnBlock || !!auctionState?.current_highest_team_id}
+              title={auctionState?.current_highest_team_id ? "Cannot mark unsold — a bid has been placed" : undefined}
               className="flex items-center gap-2 px-6 py-3 border border-border hover:border-accent-red text-txt-secondary hover:text-accent-red font-display tracking-wider rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <XCircle size={18} /> UNSOLD
@@ -374,6 +376,9 @@ export default function AuctioneerPage() {
               </div>
             </div>
           )}
+
+          {/* Remaining Players Queue */}
+          <RemainingPlayersPanel players={unsoldPlayers} />
         </div>
 
         {/* Right Sidebar — Teams */}
@@ -451,6 +456,60 @@ function TeamSidebarCard({
               <span className="font-mono text-gold shrink-0 ml-2">{formatPrice(p.sold_price ?? 0)}</span>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RemainingPlayersPanel({ players }: { players: Player[] }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (players.length === 0) return null;
+
+  const byRole = players.reduce<Record<string, number>>((acc, p) => {
+    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  return (
+    <div className="bg-surface-card border border-border rounded-xl overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full p-4 flex items-center justify-between text-left"
+      >
+        <div className="flex items-center gap-2">
+          <List size={16} className="text-txt-secondary" />
+          <h3 className="font-display text-lg tracking-wider">REMAINING PLAYERS</h3>
+          <span className="ml-1 px-2.5 py-0.5 bg-gold/20 text-gold text-xs font-semibold rounded-full">
+            {players.length}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2 text-[10px] text-txt-secondary">
+            {Object.entries(byRole).map(([role, count]) => (
+              <span key={role} className="px-2 py-0.5 bg-surface-secondary rounded-full">
+                {role}: {count}
+              </span>
+            ))}
+          </div>
+          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        </div>
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 border-t border-border/50">
+          <div className="max-h-64 overflow-y-auto space-y-1 pt-2">
+            {players.map((p, i) => (
+              <div key={p.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-surface-secondary/30">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] text-txt-secondary font-mono w-5 shrink-0">{i + 1}</span>
+                  <span className="text-sm truncate">{p.name}</span>
+                  <span className="text-[10px] text-txt-secondary px-1.5 py-0.5 bg-surface-secondary rounded-full shrink-0">{p.role}</span>
+                </div>
+                <span className="font-mono text-xs text-gold shrink-0 ml-2">{formatPrice(p.base_price)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

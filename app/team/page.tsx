@@ -12,7 +12,7 @@ import { calculateMaxBid, getRemainingMandatorySlots } from "@/lib/budgetCalc";
 import CountdownTimer from "@/components/CountdownTimer";
 import type { Player, Team, SessionData } from "@/types";
 import Image from "next/image";
-import { LogOut, Plus, Minus, ChevronDown, ChevronUp, Trophy, AlertTriangle } from "lucide-react";
+import { LogOut, Plus, Minus, ChevronDown, ChevronUp, Trophy, AlertTriangle, List } from "lucide-react";
 import clsx from "clsx";
 import { toast } from "sonner";
 
@@ -27,6 +27,7 @@ export default function TeamPage() {
   const [bidAmount, setBidAmount] = useState(0);
   const [bidding, setBidding] = useState(false);
   const [wasHighest, setWasHighest] = useState(false);
+  const [unsoldPlayers, setUnsoldPlayers] = useState<Player[]>([]);
 
   useEffect(() => {
     const s = getSession();
@@ -49,13 +50,23 @@ export default function TeamPage() {
     if (data) setMySquad(data);
   }, [session?.teamId]);
 
+  const fetchUnsoldPlayers = useCallback(async () => {
+    const { data } = await supabase
+      .from("players")
+      .select("*")
+      .eq("status", "unsold")
+      .order("queue_order", { ascending: true, nullsFirst: false });
+    if (data) setUnsoldPlayers(data);
+  }, []);
+
   useEffect(() => {
     fetchMyTeam();
     fetchMySquad();
-  }, [fetchMyTeam, fetchMySquad]);
+    fetchUnsoldPlayers();
+  }, [fetchMyTeam, fetchMySquad, fetchUnsoldPlayers]);
 
   useRealtime("teams", fetchMyTeam);
-  useRealtime("players", fetchMySquad);
+  useRealtime("players", () => { fetchMySquad(); fetchUnsoldPlayers(); });
 
   // Calculate max bid
   const maxBid = useMemo(() => {
@@ -348,6 +359,9 @@ export default function TeamPage() {
           </div>
         )}
 
+        {/* Remaining Players */}
+        <RemainingPlayersList players={unsoldPlayers} />
+
         {/* All Teams Overview */}
         <div className="bg-surface-card border border-border rounded-2xl p-6">
           <h3 className="font-display text-xl tracking-wider mb-4">ALL TEAMS</h3>
@@ -395,6 +409,87 @@ function TeamAccordion({ team, isMyTeam }: { team: Team; isMyTeam: boolean }) {
           )) : (
             <p className="text-xs text-txt-secondary py-2">No players yet</p>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RemainingPlayersList({ players }: { players: Player[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const [roleFilter, setRoleFilter] = useState("");
+
+  if (players.length === 0) return null;
+
+  const byRole = players.reduce<Record<string, number>>((acc, p) => {
+    acc[p.role] = (acc[p.role] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const filtered = roleFilter ? players.filter((p) => p.role === roleFilter) : players;
+
+  return (
+    <div className="bg-surface-card border border-border rounded-2xl overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full p-6 flex items-center justify-between text-left"
+      >
+        <div className="flex items-center gap-3">
+          <List size={18} className="text-txt-secondary" />
+          <h3 className="font-display text-xl tracking-wider">REMAINING PLAYERS</h3>
+          <span className="px-2.5 py-0.5 bg-gold/20 text-gold text-xs font-semibold rounded-full">
+            {players.length}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1.5 text-[10px] text-txt-secondary">
+            {Object.entries(byRole).map(([role, count]) => (
+              <span key={role} className="px-2 py-0.5 bg-surface-secondary rounded-full">
+                {role}: {count}
+              </span>
+            ))}
+          </div>
+          {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </div>
+      </button>
+      {expanded && (
+        <div className="px-6 pb-6 border-t border-border/50">
+          <div className="flex gap-2 pt-3 pb-2 flex-wrap">
+            <button
+              onClick={() => setRoleFilter("")}
+              className={clsx(
+                "px-3 py-1 rounded-full text-xs transition-colors",
+                !roleFilter ? "bg-gold/20 text-gold" : "bg-surface-secondary text-txt-secondary hover:text-txt-primary"
+              )}
+            >
+              All ({players.length})
+            </button>
+            {Object.entries(byRole).map(([role, count]) => (
+              <button
+                key={role}
+                onClick={() => setRoleFilter(roleFilter === role ? "" : role)}
+                className={clsx(
+                  "px-3 py-1 rounded-full text-xs transition-colors",
+                  roleFilter === role ? "bg-gold/20 text-gold" : "bg-surface-secondary text-txt-secondary hover:text-txt-primary"
+                )}
+              >
+                {role} ({count})
+              </button>
+            ))}
+          </div>
+          <div className="max-h-72 overflow-y-auto space-y-1">
+            {filtered.map((p, i) => (
+              <div key={p.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg hover:bg-surface-secondary/30">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] text-txt-secondary font-mono w-5 shrink-0">{i + 1}</span>
+                  <span className="text-sm truncate">{p.name}</span>
+                  <span className="text-[10px] text-txt-secondary px-1.5 py-0.5 bg-surface-secondary rounded-full shrink-0">{p.role}</span>
+                  {p.country && <span className="text-[10px] text-txt-secondary shrink-0">{p.country}</span>}
+                </div>
+                <span className="font-mono text-xs text-gold shrink-0 ml-2">{formatPrice(p.base_price)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

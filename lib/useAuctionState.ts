@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "./supabase";
 import { useRealtime } from "./useRealtime";
 import type { AuctionState, AuctionSettings, Player, Bid, Team } from "@/types";
+
+const POLL_INTERVAL_MS = 2000;
 
 interface UseAuctionStateReturn {
   auctionState: AuctionState | null;
@@ -22,6 +24,8 @@ export function useAuctionState(): UseAuctionStateReturn {
   const [bids, setBids] = useState<Bid[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const lastUpdatedRef = useRef<string | null>(null);
 
   const fetchAuctionState = useCallback(async () => {
     const { data } = await supabase
@@ -88,9 +92,30 @@ export function useAuctionState(): UseAuctionStateReturn {
     refetch();
   }, [refetch]);
 
+  // Polling fallback: check auction_state every 2s, only do full refetch when last_updated changes
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from("auction_state")
+        .select("last_updated")
+        .eq("id", 1)
+        .single();
+      if (data && data.last_updated !== lastUpdatedRef.current) {
+        lastUpdatedRef.current = data.last_updated;
+        const state = await fetchAuctionState();
+        await fetchTeams();
+        if (state) {
+          await fetchCurrentPlayer(state.current_player_id);
+        }
+      }
+    }, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [fetchAuctionState, fetchTeams, fetchCurrentPlayer]);
+
   const handleAuctionChange = useCallback(async () => {
     const state = await fetchAuctionState();
     if (state) {
+      lastUpdatedRef.current = state.last_updated;
       await fetchCurrentPlayer(state.current_player_id);
     }
   }, [fetchAuctionState, fetchCurrentPlayer]);
