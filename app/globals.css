@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #08090d;
+  --bg-secondary: #111318;
+  --bg-card: #16191f;
+  --border: #2a2d35;
+  --gold: #f0b429;
+  --gold-dim: #b88a1a;
+  --text-primary: #f0f0f0;
+  --text-secondary: #8a8f9e;
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #3b82f6;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Noise texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Player reveal */
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Bid amount pulse */
+@keyframes bidPulse {
+  0% {
+    transform: scale(1);
+    color: var(--text-primary);
+  }
+  50% {
+    transform: scale(1.08);
+    color: var(--gold);
+  }
+  100% {
+    transform: scale(1);
+    color: var(--text-primary);
+  }
+}
+
+/* Sold stamp */
+@keyframes stampIn {
+  from {
+    transform: scale(2) rotate(-15deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(-15deg);
+    opacity: 1;
+  }
+}
+
+/* Timer pulse */
+@keyframes timerPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0.2);
+  }
+}
+
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Shimmer loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Gold glow */
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(240, 180, 41, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(240, 180, 41, 0.4);
+  }
+}
+
+/* Flash for team win highlight */
+@keyframes flashHighlight {
+  0% { background-color: rgba(240, 180, 41, 0.3); }
+  100% { background-color: transparent; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-bid-pulse {
+  animation: bidPulse 0.4s ease-in-out;
+}
+
+.animate-stamp {
+  animation: stampIn 0.3s ease-out forwards;
+}
+
+.animate-timer-pulse {
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-gold-glow {
+  animation: goldGlow 2s ease-in-out infinite;
+}
+
+.animate-flash {
+  animation: flashHighlight 1s ease-out;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-secondary) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
