@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSession, clearSession } from "@/lib/session";
 import { supabase } from "@/lib/supabase";
@@ -37,18 +37,21 @@ export default function AuctioneerPage() {
     }
   }, [router]);
 
-  // Track unsold players list
+  const fetchUnsoldPlayers = useCallback(async () => {
+    const { data } = await supabase
+      .from("players")
+      .select("*")
+      .eq("status", "unsold")
+      .order("queue_order", { ascending: true, nullsFirst: false });
+    if (data) setUnsoldPlayers(data);
+  }, []);
+
+  // Fetch unsold on mount + poll every 2s
   useEffect(() => {
-    const fetchUnsoldPlayers = async () => {
-      const { data } = await supabase
-        .from("players")
-        .select("*")
-        .eq("status", "unsold")
-        .order("queue_order", { ascending: true, nullsFirst: false });
-      if (data) setUnsoldPlayers(data);
-    };
     fetchUnsoldPlayers();
-  }, [auctionState, bids]);
+    const interval = setInterval(fetchUnsoldPlayers, 2000);
+    return () => clearInterval(interval);
+  }, [fetchUnsoldPlayers]);
 
   const unsoldCount = unsoldPlayers.length;
 
@@ -220,7 +223,7 @@ export default function AuctioneerPage() {
       <header className="sticky top-0 z-40 bg-surface-primary/80 backdrop-blur-md border-b border-border">
         <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="font-display text-3xl text-gold tracking-wider">STRIKE</h1>
+            <h1 className="font-display text-3xl text-gold tracking-wider">NO RUN</h1>
             <span className="text-txt-secondary text-sm">/ AUCTIONEER</span>
             <span className={clsx(
               "px-3 py-1 rounded-full text-xs font-semibold",

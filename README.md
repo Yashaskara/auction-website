@@ -142,7 +142,7 @@ On the Team page, +/- buttons adjust the bid by the configured increment. The nu
 
 ## Budget & Max Bid Calculation
 
-To prevent a team from blowing their entire budget on one player and being unable to fill their squad, STRIKE enforces a **max bid cap** derived from mandatory squad reservation:
+To prevent a team from blowing their entire budget on one player and being unable to fill their squad, NO RUN enforces a **max bid cap** derived from mandatory squad reservation:
 
 ```
 remaining_mandatory_slots = max(0, min_players_per_team - current_squad_count - 1)

@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuctionState } from "@/lib/useAuctionState";
-import { useRealtime } from "@/lib/useRealtime";
 import { formatPrice } from "@/lib/formatPrice";
 import CountdownTimer from "@/components/CountdownTimer";
 import StatusBadge from "@/components/StatusBadge";
@@ -24,9 +23,9 @@ export default function SpectatorPage() {
 
   useEffect(() => {
     fetchAllPlayers();
+    const interval = setInterval(fetchAllPlayers, 2000);
+    return () => clearInterval(interval);
   }, [fetchAllPlayers]);
-
-  useRealtime("players", fetchAllPlayers);
 
   // Build team squad map
   useEffect(() => {

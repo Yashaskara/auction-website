@@ -6,7 +6,6 @@ import { getSession, clearSession } from "@/lib/session";
 import { supabase } from "@/lib/supabase";
 import { useAuctionState } from "@/lib/useAuctionState";
 import { useCountdown } from "@/lib/useCountdown";
-import { useRealtime } from "@/lib/useRealtime";
 import { formatPrice } from "@/lib/formatPrice";
 import { calculateMaxBid, getRemainingMandatorySlots } from "@/lib/budgetCalc";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -65,8 +64,15 @@ export default function TeamPage() {
     fetchUnsoldPlayers();
   }, [fetchMyTeam, fetchMySquad, fetchUnsoldPlayers]);
 
-  useRealtime("teams", fetchMyTeam);
-  useRealtime("players", () => { fetchMySquad(); fetchUnsoldPlayers(); });
+  // Poll team-specific data every 2s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchMyTeam();
+      fetchMySquad();
+      fetchUnsoldPlayers();
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [fetchMyTeam, fetchMySquad, fetchUnsoldPlayers]);
 
   // Calculate max bid
   const maxBid = useMemo(() => {

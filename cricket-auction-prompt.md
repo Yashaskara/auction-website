@@ -184,7 +184,7 @@ export interface AuctionState {
 ## Page-by-Page Behavior
 
 ### `/` — Mode Selector
-- Full-screen dark landing with the app name **"STRIKE"**
+- Full-screen dark landing with the app name **"NO RUN"**
 - Four large mode cards: Admin, Auctioneer, Team, Spectator
 - Clicking Admin / Auctioneer → opens `PasscodeGate` modal
 - Clicking Team → opens `PasscodeGate` for auctioneer passcode, then a team selector dropdown (pick your team from DB), then that team's passcode
