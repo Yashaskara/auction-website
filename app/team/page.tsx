@@ -54,7 +54,7 @@ export default function TeamPage() {
       .from("players")
       .select("*")
       .eq("status", "unsold")
-      .order("queue_order", { ascending: true, nullsFirst: false });
+      .order("name", { ascending: true });
     if (data) setUnsoldPlayers(data);
   }, []);
 
